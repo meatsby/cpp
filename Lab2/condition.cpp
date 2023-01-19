@@ -18,5 +18,19 @@ int main() {
     } else {
         printf("Adult");
     }
+
+    for (int i = 0; i < 30; i++) {
+        if (i >= 6 && i <= 10) {
+            if (i == 7) {
+                printf("%d", i);
+                continue;
+            }
+            printf("%d", i);
+        }
+        if (i == 20) {
+            printf("%d", i);
+            break;
+        }
+    }
     return 0;
 }
