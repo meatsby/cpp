@@ -1,3 +1,5 @@
+#include <time.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 int main() {
@@ -31,6 +33,18 @@ int main() {
             printf("%d", i);
             break;
         }
+    }
+
+    srand(time(NULL));
+    switch (int i = rand() % 3) {
+        case 0:
+            printf("rock");
+            break;
+        case 1:
+            printf("paper");
+            break;
+        case 2:
+            printf("scissor");
     }
     return 0;
 }
