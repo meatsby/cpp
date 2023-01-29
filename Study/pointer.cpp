@@ -2,6 +2,8 @@
 
 void swap(int a, int b);
 
+void changeArray(int * ptr);
+
 int main() {
     int a = 1;
     int b = 2;
@@ -38,7 +40,18 @@ int main() {
     printf("Before swap = a : %d, b : %d\n", x, y);
     swap(a, b);
     printf("After swap = a : %d, b : %d\n", x, y);
+
+    int arr2[3] = {10, 20, 30};
+    changeArray(arr2);
+    for (int i = 0; i < 3; i++) {
+        printf("%d\n", arr2[i]);
+    }
+
     return 0;
+}
+
+void changeArray(int * ptr) {
+    ptr[2] = 50;
 }
 
 void swap(int a, int b) {
