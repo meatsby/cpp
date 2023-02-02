@@ -10,7 +10,7 @@ int main() {
     cout << "Please Enter a number of Three Digits:" << endl;
     int input;
     cin >> input;
-    cout << "Sum of Digits is:" << endl << sumOfDigits(input) << endl;
+//    cout << "Sum of Digits is:" << endl << sumOfDigits(input) << endl;
     cout << "Sum of Square of Digits is:" << endl << sumOfSquareOfDigits(input) << endl;
     return 0;
 }
