@@ -11,6 +11,6 @@ int main() {
 
     b += ++a;
     cout << setprecision(1);
-    cout << scientific << (double )b << endl;
+    cout << scientific << (double) b << endl;
     cout << a << endl;
 }
