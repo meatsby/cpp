@@ -15,12 +15,14 @@ void printMonth(int month);
 
 void printBirthday(int year, int month, int day);
 
+void printLuckyNumber(int year, int month, int day);
+
 using namespace std;
 
 int main() {
     int year, month, day;
 
-    cout << "Please enter your birth date (yyyy mm dd): ";
+    cout << "Please enter your birth date (yyyy mm dd) : ";
     cin >> year >> month >> day;
 
     if (!isValidInput(year, month, day)) {
@@ -29,7 +31,18 @@ int main() {
 
     printBirthday(year, month, day);
 
+    printLuckyNumber(year, month, day);
+
     return 0;
+}
+
+void printLuckyNumber(int year, int month, int day) {
+    int luckyNum = year / 1000 + year % 1000 / 100 + year % 100 / 10 + year % 10
+                   + month / 10 + month % 10 + day / 10 + day % 10;
+    while (luckyNum > 9) {
+        luckyNum = luckyNum / 10 + luckyNum % 10;
+    }
+    cout << "Your lucky number is " << luckyNum << "." << endl;
 }
 
 void printBirthday(int year, int month, int day) {
