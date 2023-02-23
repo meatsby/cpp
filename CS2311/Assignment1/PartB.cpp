@@ -18,6 +18,10 @@ int main() {
         coupons = leftoverCoupons + redeemedCookies;
     }
 
+    if (cookies == 1) {
+        cout << "You can buy " << cookies << " cookie and have " << coupons << " unused coupon(s)." << endl;
+        return 0;
+    }
     cout << "You can buy " << cookies << " cookies and have " << coupons << " unused coupon(s)." << endl;
     return 0;
 }
