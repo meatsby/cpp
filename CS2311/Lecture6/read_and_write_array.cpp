@@ -15,4 +15,5 @@ int main() {
         sum += marks[i];
     }
     cout << "Average mark = " << (float) sum / N << endl;
+    return 0;
 }
