@@ -6,9 +6,9 @@ int calculate(int, int);
 
 int main() {
     int base, power, result;
-    cout << "Base";
+    cout << "Base : ";
     cin >> base;
-    cout << "Power";
+    cout << "Power : ";
     cin >> power;
     result = calculate(base, power);
     cout << base << "^" << power << " = " << result;
