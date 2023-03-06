@@ -23,5 +23,15 @@ int main() {
     }
     // i=2, 5, 8, 11, 14
 
+    // 3.
+    int num, ret;
+    cout << "Let us start.\n";
+    cin >> num;
+    if (num % 2 == 1)
+        ret = num/2;
+    else
+        ret = 1;
+    cout << "ret=" << ret << endl;
+
     return 0;
 }
