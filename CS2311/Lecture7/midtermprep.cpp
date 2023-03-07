@@ -1,5 +1,7 @@
 #include <iostream>
 
+void printParkFee(double hours);
+
 using namespace std;
 
 int main() {
@@ -33,5 +35,28 @@ int main() {
         ret = 1;
     cout << "ret=" << ret << endl;
 
+    // 4.
+    double hours;
+    cout << "Enter hours: ";
+    cin >> hours;
+    if (hours <= 0)
+        cout << "Invalid input!" << endl;
+    else
+        printParkFee(hours);
     return 0;
+}
+
+void printParkFee(double hours) {
+    int fee;
+    double min = hours * 60 - 1;
+    if (min <= 0) {
+        fee = 0;
+    } else if (min <= 120) {
+        fee = ((int) (min / 60) + 1) * 50;
+    } else if (min <= 300) {
+        fee = 100 + ((int) ((min - 120) / 30) + 1) * 20;
+    } else {
+        fee = 220 + ((int) ((min - 300) / 30) + 1) * 40;
+    }
+    cout << "$" << fee << endl;
 }
