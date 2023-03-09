@@ -33,7 +33,7 @@ int main() {
         ret = num/2;
     else
         ret = 1;
-    cout << "ret=" << ret << endl;
+    cout << "\"ret\"=" << ret << endl;
 
     // 4.
     double hours;
