@@ -24,5 +24,11 @@ int main() {
     cout.width(5); // cout << setw(5);
     cout << 1234567 << endl;
     // - cout << setprecision(2) << fixed << scientific;
+
+    // Ch3. Condition
+    // - 0<a<1 == false
+    // - Short Circuit Evaluation
+    // - if not compounded with {} will only execute 1 line
+    // - switch statement will not execute default block when break
     return 0;
 }
