@@ -34,5 +34,24 @@ int main() {
     // Ch5. Function
     // - Pass by reference uses '&'
     // - default parameters of function should be declared from right side
+
+    // Ch6. Array
+    // - declaring array must include size
+    int arr[10];
+    // - initializing array can skip size
+    int arr2[] = {1,2,3};
+    // - function parameter must indicate it is array
+    // void func(int arr[]) {
+    // }
+    // - Bubble sort
+
+    // - Binary search
+
+    // - Multi-dimensional array
+    int arr3d[][3] = {1,2,3,4,5,6};
+    cout << arr3d[0][2] << " " << arr3d[1][2] << endl;
+    // - if passing multidimensional array, last size must be given
+    // void func(int arr3d[][3]) {
+    // }
     return 0;
 }
