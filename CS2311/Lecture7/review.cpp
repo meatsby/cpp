@@ -21,7 +21,7 @@ int main() {
     int c = 3 & 5;
     cout << c << endl;
     // - cout.width()
-    cout.width(5); // cout << setw(5);
+    cout.width(5); // cout << setw(5); requires iomanip
     cout << 1234567 << endl;
     // - cout << setprecision(2) << fixed << scientific;
 
@@ -30,5 +30,9 @@ int main() {
     // - Short Circuit Evaluation
     // - if not compounded with {} will only execute 1 line
     // - switch statement will not execute default block when break
+
+    // Ch5. Function
+    // - Pass by reference uses '&'
+    // - default parameters of function should be declared from right side
     return 0;
 }
