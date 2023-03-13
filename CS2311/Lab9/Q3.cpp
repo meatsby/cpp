@@ -28,8 +28,8 @@ int main() {
     }
 
     for (int i = 0; i < 26; i++) {
-        cout << "The occurrence of '" << char(i + 97) << "' is " << arr[i] << endl;
         if (arr[i] != 0) {
+            cout << "The occurrence of '" << char(i + 97) << "' is " << arr[i] << endl;
             fout << char(i + 97) << " ";
         }
     }
