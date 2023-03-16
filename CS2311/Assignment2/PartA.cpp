@@ -5,19 +5,18 @@
 using namespace std;
 
 int main() {
+    char str[256];
     cout << "Enter Header:" << endl;
-    char input[256];
-    cin.getline(input, 256);
-    char str[strlen(input) + 1];
-    strcpy(str, input);
-    cout << "Character?";
+    cin.getline(str, 256);
+
     char c;
+    cout << "Character?";
     cin.get(c);
 
     int comb[7] = {1, 3, 7, 15, 31, 63, 127};
-    int idx = 0;
+    int idx = 0, len = strlen(str);
     for (int i = 0; i < 7; i++) {
-        for (int j = 1; j <= comb[i] && idx < strlen(input); j++, idx++) {
+        for (int j = 1; j <= comb[i] && idx < len; j++, idx++) {
             if (str[idx] == c) {
                 int temp = j;
                 int binary = 0;
@@ -29,7 +28,7 @@ int main() {
             }
         }
     }
-    for (int i = 247; i < 256 && idx < strlen(input); i++) {
+    for (int i = 247; i < 256 && idx < len; i++) {
         if (str[idx] == c) {
             cout << "1111111" << endl;
         }
