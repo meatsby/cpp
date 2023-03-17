@@ -13,6 +13,7 @@ int main() {
     cout << "Character?";
     cin.get(c);
 
+    // Handle Headers with length ~ 247
     int comb[7] = {1, 3, 7, 15, 31, 63, 127};
     int idx = 0, len = strlen(str);
     for (int i = 0; i < 7; i++) {
@@ -28,7 +29,9 @@ int main() {
             }
         }
     }
-    for (int i = 247; i < 256 && idx < len; i++) {
+
+    // Handle Headers with length 248 ~ 256
+    for (; idx < len; idx++) {
         if (str[idx] == c) {
             cout << "1111111" << endl;
         }
