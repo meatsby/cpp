@@ -5,9 +5,9 @@
 using namespace std;
 
 int main() {
-    char str[256];
+    char str[257];
     cout << "Enter Header:" << endl;
-    cin.getline(str, 256);
+    cin.getline(str, 257);
 
     char c;
     cout << "Character?";
