@@ -38,12 +38,14 @@ int main() {
     bool first = true;
     int length, i = 0;
     while (true) {
+        // get length
         if (first) {
             length = (int(code[i]) - 48) * 4 + (int(code[i + 1]) - 48) * 2 + (int(code[i + 2]) - 48);
             i += 3;
             first = false;
         }
 
+        // read segment
         char key[7];
         bool isEnd = true;
         for (int k = 0; k < length; i++, k++) {
@@ -54,6 +56,7 @@ int main() {
         }
         key[length] = '\0';
 
+        // check if end
         if (isEnd) {
             if (code[i + 1] == '\0') {
                 break;
@@ -62,6 +65,7 @@ int main() {
             continue;
         }
 
+        // find corresponding header
         for (int ki = 0; ki < 257; ki++) {
             if (strcmp(key, keys[ki]) == 0) {
                 cout << str[ki];
