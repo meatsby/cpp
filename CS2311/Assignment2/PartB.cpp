@@ -8,7 +8,7 @@ int main() {
     cout << "Enter Header:" << endl;
     cin.getline(str, 257);
 
-    char keys[257][7];
+    char keys[257][8];
 
     int comb[7] = {1, 3, 7, 15, 31, 63, 127};
     int idx = 0, len = strlen(str);
@@ -31,22 +31,25 @@ int main() {
         }
     }
 
-    char code[257];
-    cout << "Enter code:";
-    cin.getline(code, 257);
+    char code[1025];
+    cout << "Enter code:" << endl;
+    cin.getline(code, 1025);
 
     bool first = true;
-    int length, i = 0;
-    while (true) {
+    unsigned int length, i = 0, clen = strlen(code);
+    while (i < clen) {
         // get length
         if (first) {
             length = (int(code[i]) - 48) * 4 + (int(code[i + 1]) - 48) * 2 + (int(code[i + 2]) - 48);
+            if (length == 0) {
+                break;
+            }
             i += 3;
             first = false;
         }
 
         // read segment
-        char key[7];
+        char key[8];
         bool isEnd = true;
         for (int k = 0; k < length; i++, k++) {
             if (code[i] == '1') {
@@ -58,9 +61,6 @@ int main() {
 
         // check if end
         if (isEnd) {
-            if (code[i + 1] == '\0') {
-                break;
-            }
             first = true;
             continue;
         }
