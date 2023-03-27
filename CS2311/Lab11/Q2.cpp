@@ -3,9 +3,9 @@
 using namespace std;
 
 void countWord(char *arr, int *count) {
-    char *rPtr = arr - 1;
+    char *rPtr = arr;
     for (; *arr != '\0'; arr++) {
-        if (*(arr + 1) == ' ' || *(arr + 1) == '\0') {
+        if (*(arr + 1) == ' ') {
             (*count)++;
             cout << "Word " << *count << " has " << arr - rPtr << " characters." << endl;
             rPtr = arr + 1;
