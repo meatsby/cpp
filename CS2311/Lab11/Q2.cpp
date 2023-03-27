@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int countWord(char *arr, int *count) {
+void countWord(char *arr, int *count) {
     char *rPtr = arr - 1;
     for (; *arr != '\0'; arr++) {
         if (*(arr + 1) == ' ' || *(arr + 1) == '\0') {
