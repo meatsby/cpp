@@ -17,5 +17,7 @@ int main() {
         cout << *arr << " ";
     }
 
+    delete[] arr;
+
     return 0;
 }
