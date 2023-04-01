@@ -1,6 +1,6 @@
-#include <Adafruit_NeoPixel.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include "Adafruit_NeoPixel.h"
+#include "Adafruit_GFX.h"
+#include "Adafruit_SSD1306.h"
 #include "TRSensors.h"
 #include <Wire.h>
 
