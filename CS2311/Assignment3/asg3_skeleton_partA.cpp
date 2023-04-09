@@ -33,8 +33,9 @@ void initSequence(Card *cardSeq, char colorName[][10], int *color, int *num);
 void printSequence(Card *cardSeq);
 
 int main() {
-    // Add your code here.
-    // ...
+    int seed;
+    cout << "Enter the seed for random number generation:" << endl;
+    cin >> seed;
 
     initSequence(cardSeq, colorName, color, num);
     printSequence(cardSeq);
