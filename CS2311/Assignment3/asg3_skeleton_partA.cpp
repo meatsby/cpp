@@ -99,7 +99,7 @@ void initSequence(Card *cardSeq, char colorName[][10], int *color, int *num) {
                       {47, 24, 31, 32, 37, 42}};
 
     int seed;
-    cout << "Enter the seed for random number generation:";
+    cout << "Enter the seed for random number generation: ";
     cin >> seed;
 
     for (int i = 0; i < 6; i++) {
