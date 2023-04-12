@@ -68,12 +68,21 @@ Card chooseCard(Card *cardSeq, Card previousCard) {
     return *new Card();
 }
 
+int findIdx(Card *cardSeq, Card target) {
+    for (int i = 0; i < 6; i++) {
+        if (target == cardSeq[i]) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 // Add your code here.
 int main() {
     char colorName[4][10] = {"Red", "Yellow", "Blue", "Green"};
 
     int input;
-    cout << "Enter the seed for random number generation: ";
+    cout << "Enter the seed for random number generation: " << endl;
     cin >> input;
 
     // Add your code here.
@@ -91,35 +100,48 @@ int main() {
     printSequence(ComcardSeq);
 
     // Add your code here.
+
+    // Choosing first card
     Card previousCard = ComcardSeq[0];
-    while (true) {
-        Card c = chooseCard(ComcardSeq, previousCard);
-        if (c == *new Card()) {
-            cout << "Game ends. You win" << endl;
-            return 0;
-        }
+    Card c = chooseCard(ComcardSeq, previousCard);
 
-        cout << "Game continues. Your remaining card(s): ";
-        printSequence(cardSeq);
-
+    // Repeat for all cards
+    for (int turn = 0; turn < 6; turn++) {
+        // Get user input
         int colIn, numIn;
-        cout << "The computer plays " << c << ", please input two integers to represent the card you plan to play: ";
+        cout << "The computer plays " << c << ", please input two integers to represent the card you plan to play: "
+             << endl;
         cin >> colIn >> numIn;
 
-        if (colIn == 0 && numIn == 0) {
+        // Check if input is valid
+        Card card = *new Card(colorName[colIn - 1], colIn, numIn);
+        int idx = findIdx(cardSeq, card);
+        if ((colIn == 0 && numIn == 0) || !card.compatible(previousCard) || (idx == -1)) {
             cout << "Game ends. you lose" << endl;
             return 0;
         }
 
-        Card card = *new Card(colorName[colIn - 1], colIn, numIn);
-        for (int i = 0; i < 6; i++) {
-            if (card == cardSeq[i]) {
-                cardSeq[i].setValue(0);
-                previousCard = cardSeq[i];
-                break;
-            }
+        // Update previous card as user card
+        cardSeq[idx].setValue(0);
+        previousCard = cardSeq[idx];
+
+        // If all cards are used, draw
+        if (turn == 5) {
+            break;
         }
+
+        // Choosing next card
+        c = chooseCard(ComcardSeq, previousCard);
+        if (c == *new Card()) {
+            cout << "Game ends. You win" << endl;
+            return 0;
+        }
+        previousCard = c;
+
+        cout << "Game continues. Your remaining card(s): ";
+        printSequence(cardSeq);
     }
+    cout << "Game ends. draw" << endl;
     return 0;
 }
 
