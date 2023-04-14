@@ -30,7 +30,7 @@ public:
 
     friend ostream &operator<<(ostream &outs, Triangle &t) {
         outs << "The sides are: ";
-        outs << t.s1 << " " << t.s2 << "" << t.s3 << " ";
+        outs << t.s1 << " " << t.s2 << " " << t.s3 << " ";
         outs << "The area is: ";
         outs << t.getArea() << endl;
         return outs;
