@@ -5,6 +5,7 @@ using namespace std;
 class Actress {
 private:
     int age;
+
 public:
     char name[255];
     Actress(char *name, int age):age(age) {
