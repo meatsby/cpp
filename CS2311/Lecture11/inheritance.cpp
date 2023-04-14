@@ -20,11 +20,41 @@ public:
     }
 };
 
+class C : protected A {
+public:
+    void print() {
+        cout << z;
+        y = 0;
+        // cout << x; not allowed
+    }
+};
+
+class D : private A {
+public:
+    void print() {
+        cout << z;
+        y = 0;
+        // cout << x; not allowed
+    }
+};
+
 int main() {
-    B obj;
-    // obj.x = 0; not allowed
-    // obj.y = 0; not allowed
-    obj.z = 0;
-    obj.print();
+    B obj1;
+    // obj1.x = 0; not allowed
+    // obj1.y = 0; not allowed
+    obj1.z = 0;
+    obj1.print();
+
+    C obj2;
+    // obj2.x = 0; not allowed
+    // obj2.y = 0; not allowed
+    // obj2.z = 0; not allowed
+    obj2.print();
+
+    D obj3;
+    // obj3.x = 0; not allowed
+    // obj3.y = 0; not allowed
+    // obj3.z = 0; not allowed
+    obj3.print();
     return 0;
 }
