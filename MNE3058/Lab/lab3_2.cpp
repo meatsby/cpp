@@ -14,11 +14,11 @@ void loop() {
     delayMicroseconds(10);
     digitalWrite(TRIG, LOW);
 
-    float Fdistance = pulseIn(ECHO, HIGH);
-    Fdistance = Fdistance / 58;
+    float timeTraveled = pulseIn(ECHO, HIGH);
+    float distance = timeTraveled / 58;
 
     Serial.print("Distance = ");
-    Serial.print(Fdistance);
+    Serial.print(distance);
     Serial.println("cm");
     delay(250);
 }
