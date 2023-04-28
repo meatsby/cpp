@@ -1,41 +1,17 @@
-#include <iostream>
-
-using namespace std;
-
-int main() {
-    int temp[10];
-    int *ptr = temp;
-
-    cout << temp << endl;
-    cout << temp[0] << endl;
-    cout << temp[1] << endl;
-    cout << &ptr << endl;
-}
-
-// constants won't change
-const int buttonPin = 2;
-const int ledPin = 13;
-
-// variables will change
-int buttonState = 0;
+bool LED_STATE1 = true;
+bool LED_STATE2 = true;
+int T2_index = 1;
 
 void setup() {
-    // init the LED pin as an output
-    pinMode(ledPin, OUTPUT);
-    // init the pushbutton pin as an input
-    pinMode(buttonPin, INPUT);
-}
-
-void loop() {
-    // read the state of the pushbutton value
-    buttonState = digitalRead(buttonPin);
-
-    // check if the pushbutton is pressed
-    if (buttonState == HIGH) {
-        // LED on
-        digitalWrite(ledPin, HIGH);
-    } else {
-        // LED off
-        digitalWrite(ledPin, low);
-    }
+    pinMode(5, OUTPUT);
+    pinMode(6, OUTPUT);
+    cli(); // stop interrupts for till we make the settings
+    // Timer 1 (interrupt each 100ms)
+    TCCR1A = 0; // Reset entire TCCR1A to 0
+    TCCR1B = 0; // Reset entire TCCR1B to 0
+    TCCR1B |= B00000101; // Set CS12 to 1 so we get prescalar 1024
+    TIMSK1 |= B00000010; // Set OCIE1A to 1 so we enable compare match A
+    OCR1A = ?????; // Finally we set compare register A to this value
+    // interrupt time = 1/(16 MHz/Prescalar) * ????
+    sei(); // Enable back the interrupts
 }
