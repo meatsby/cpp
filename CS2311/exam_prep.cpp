@@ -53,5 +53,15 @@ int main() {
     // Sat
     // Sun
     // Invalid
+    int num;
+    if (num = 0) {
+        cout << "No" << endl;
+    }
+    if (num = 3.17) {
+        cout << "Yes" << endl;
+    }
+
+    bool b = 3.17;
+    cout << b << endl;
     return 0;
 }
