@@ -1,7 +1,9 @@
 #include <iostream>
 #include <iomanip>
+
 using namespace std;
-int main() {
+
+void chapter2() {
     // all effects are permanent
 
     // default precision 5 digits after decimal points
@@ -36,23 +38,38 @@ int main() {
     cout << scientific;
     cout << 1.234 << endl;          // 1.23e+00
     cout << 0.0000001234 << endl;   // 1.23e-07
+}
 
+void chapter3() {
     int day;
     cin >> day;
     switch (day) { // if day is 6
-        case 1: cout << "Mon" << endl;
-        case 2: cout << "Tue" << endl;
-        case 3: cout << "Wed" << endl;
-        case 4: cout << "Thur" << endl;
-        case 5: cout << "Fri" << endl;
-        case 6: cout << "Sat" << endl;
-        case 7: cout << "Sun" << endl;
-        default: cout << "Invalid" << endl;
+        case 1:
+            cout << "Mon" << endl;
+        case 2:
+            cout << "Tue" << endl;
+        case 3:
+            cout << "Wed" << endl;
+        case 4:
+            cout << "Thur" << endl;
+        case 5:
+            cout << "Fri" << endl;
+        case 6:
+            cout << "Sat" << endl;
+        case 7:
+            cout << "Sun" << endl;
+        default:
+            cout << "Invalid" << endl;
     }
     // output will be
     // Sat
     // Sun
     // Invalid
+}
+
+int main() {
+    chapter2();
+    chapter3();
     int num;
     if (num = 0) {
         cout << "No" << endl;
