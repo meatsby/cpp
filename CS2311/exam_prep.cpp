@@ -67,9 +67,15 @@ void chapter3() {
     // Invalid
 }
 
+void chapter6() {
+    double a[3] = {1.1, 2.2, 3.3};
+    cout << a[0] << " " << ++a[1] << " " << a[2] << endl;
+    a[1] = a[2]++;
+    cout << a[0] << " " << a[1] << " " << a[2] << endl;
+}
+
 int main() {
-    chapter2();
-    chapter3();
+    chapter6();
     int num;
     if (num = 0) {
         cout << "No" << endl;
