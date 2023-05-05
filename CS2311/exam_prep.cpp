@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <cstring>
 
 using namespace std;
 
@@ -128,7 +129,15 @@ void chapter6() {
     }
 }
 
+void chapter7() {
+    char str[9];
+    strcpy(str, "Hi Earth");
+    str[2] = '\0';
+    cout << str << " " << strlen(str);
+    // Hi 2
+}
+
 int main() {
-    chapter6();
+    chapter7();
     return 0;
 }
