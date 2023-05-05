@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cstring>
+#include <fstream>
 
 using namespace std;
 
@@ -117,7 +118,7 @@ void chapter6() {
     // binary search
     int first = 0, last = 5, target = 56;
     while (target >= nums[first] && target <= nums[last]) {
-        int mid = (first+last)/2;
+        int mid = (first + last) / 2;
         if (target == nums[mid]) {
             cout << mid;
             break;
@@ -137,7 +138,24 @@ void chapter7() {
     // Hi 2
 }
 
+void chapter9() {
+    int x = 2;
+    int *xPtr = &x;        // * used as pointer type
+    cout << &xPtr << endl; // 0x16d29b2f0
+    cout << &x << endl;    // 0x16d29b2f8
+    cout << xPtr << endl;  // 0x16d29b2f8
+    cout << *xPtr << endl; // * used as dereference operator which prints 2
+
+    char str[] = "Hello World", *ptr = &str[0];
+    int arr[] = {1, 2, 3, 4, 5, 6}, *ptr2 = &arr[0];
+
+    cout << setw(11) << ptr << " " << ptr2 << endl;   // Hello World 0x16b9eb210
+    cout << setw(11) << *ptr << " " << *ptr2 << endl; //           H 1
+    cout << setw(11) << &ptr << " " << &ptr2 << endl; // 0x16b9eb200 0x16b9eb1f8
+    ptr = &str[6], ptr2 = &arr[1];
+    cout << setw(11) << ptr << " " << ptr2 << endl;   //       World 0x16b9eb214
+}
+
 int main() {
-    chapter7();
     return 0;
 }
