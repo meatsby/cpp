@@ -65,8 +65,7 @@ void chapter3() {
     bool b = 3.17;
     cout << b << endl;
 
-    int day;
-    cin >> day;
+    int day = 6;
     switch (day) { // if day is 6
         case 1:
             cout << "Mon" << endl;
