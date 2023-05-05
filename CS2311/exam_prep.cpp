@@ -95,9 +95,40 @@ void chapter6() {
     cout << a[0] << " " << ++a[1] << " " << a[2] << endl;
     a[1] = a[2]++;
     cout << a[0] << " " << a[1] << " " << a[2] << endl;
+
+    // bubble sort
+    int nums[] = {23, 78, 45, 8, 32, 56};
+    for (int i = 0; i < 5; i++) {
+        for (int j = 5; j > i; j--) {
+            if (nums[j] < nums[j - 1]) {
+                int temp = nums[j];
+                nums[j] = nums[j - 1];
+                nums[j - 1] = temp;
+            }
+        }
+    }
+
+    for (int k = 0; k < 6; k++) {
+        cout << nums[k] << " ";
+    }
+    cout << endl;
+
+    // binary search
+    int first = 0, last = 5, target = 56;
+    while (target >= nums[first] && target <= nums[last]) {
+        int mid = (first+last)/2;
+        if (target == nums[mid]) {
+            cout << mid;
+            break;
+        } else if (target > nums[mid]) {
+            first = mid + 1;
+        } else {
+            last = mid;
+        }
+    }
 }
 
 int main() {
-    chapter2();
+    chapter6();
     return 0;
 }
