@@ -4,8 +4,21 @@
 using namespace std;
 
 void chapter2() {
-    // all effects are permanent
+    // overflow
+    int n1 = 2147483647;
+    int n2 = n1 + 1;
+    cout << n2 << endl;
 
+    // type conversion
+    int i = 5;
+    char a = 'a';
+    double x = 1.57;
+    i = i + x;
+    cout << i << endl;
+    x = x * a;
+    cout << x << endl;
+
+    // all effects are permanent
     // default precision 5 digits after decimal points
     cout << 1.23 << endl;           // 1.23
     cout << 1.230 << endl;          // 1.23
@@ -41,6 +54,17 @@ void chapter2() {
 }
 
 void chapter3() {
+    int num;
+    if (num = 0) {
+        cout << "No" << endl;
+    }
+    if (num = 3.17) {
+        cout << "Yes" << endl;
+    }
+
+    bool b = 3.17;
+    cout << b << endl;
+
     int day;
     cin >> day;
     switch (day) { // if day is 6
@@ -75,16 +99,6 @@ void chapter6() {
 }
 
 int main() {
-    chapter6();
-    int num;
-    if (num = 0) {
-        cout << "No" << endl;
-    }
-    if (num = 3.17) {
-        cout << "Yes" << endl;
-    }
-
-    bool b = 3.17;
-    cout << b << endl;
+    chapter2();
     return 0;
 }
