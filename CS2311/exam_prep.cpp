@@ -156,6 +156,8 @@ void chapter9() {
     cout << setw(11) << ptr << " " << ptr2 << endl;   //       World 0x16b9eb214
 }
 
+void func(int &, int, int);
+
 int main() {
     return 0;
 }
