@@ -4,14 +4,16 @@
 #define PWMA 6  // L-Motor Speed
 #define AIN2 A0 // L-Motor Forward
 #define AIN1 A1 // L-Motor Backward
-
 #define PWMB 5  // R-Motor Speed
 #define BIN1 A2 // R-Motor Forward
 #define BIN2 A3 // R-Motor Backward
-
-#define PIN 7
 #define NUM_SENSORS 5 // IR Sensors
 #define Addr 0x20     // Communication address for the joystick
+
+#define KP 0.075
+#define KI 0.0001
+#define KD 20
+#define MAX_SPEED 180
 
 //Global variables to be stored regardless of the loop function
 TRSensors trs = TRSensors();
@@ -19,7 +21,7 @@ unsigned int sensorValues[NUM_SENSORS];
 unsigned int error_prior = 0;
 unsigned int position;
 long integral = 0;
-uint16_t i, j, k, m;
+
 byte value;
 bool trackFound = true; //Boolean data type variable to ensure the robot is on the line.
 
@@ -42,32 +44,49 @@ bool onTrack() {
            || sensorValues[4] > 50;
 }
 
-void forward() {
+void forward(int speed) {
     digitalWrite(AIN2, HIGH);
     digitalWrite(AIN1, LOW);
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, HIGH);
+    analogWrite(PWMA, speed);
+    analogWrite(PWMB, speed);
 }
 
-void backward() {
+void forward(int leftMotorSpeed, int rightMotorSpeed) {
+    digitalWrite(AIN2, HIGH);
+    digitalWrite(AIN1, LOW);
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, HIGH);
+    analogWrite(PWMA, leftMotorSpeed);
+    analogWrite(PWMB, rightMotorSpeed);
+}
+
+void backward(int speed) {
     digitalWrite(AIN2, LOW);
     digitalWrite(AIN1, HIGH);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
+    analogWrite(PWMA, speed);
+    analogWrite(PWMB, speed);
 }
 
-void rightTurn() {
+void rightTurn(int speed) {
     digitalWrite(AIN2, HIGH);
     digitalWrite(AIN1, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
+    analogWrite(PWMA, speed);
+    analogWrite(PWMB, speed);
 }
 
-void leftTurn() {
+void leftTurn(int speed) {
     digitalWrite(AIN2, LOW);
     digitalWrite(AIN1, HIGH);
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, HIGH);
+    analogWrite(PWMA, speed);
+    analogWrite(PWMB, speed);
 }
 
 void stop() {
@@ -75,36 +94,41 @@ void stop() {
     digitalWrite(AIN1, LOW);
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, LOW);
-}
-
-void setSpeed(int bothSpeed) {
-    analogWrite(PWMA, bothSpeed);
-    analogWrite(PWMB, bothSpeed);
-}
-
-void setSpeed(int leftMotorSpeed, int rightMotorSpeed) {
-    analogWrite(PWMA, leftMotorSpeed);
-    analogWrite(PWMB, rightMotorSpeed);
+    analogWrite(PWMA, 0);
+    analogWrite(PWMB, 0);
 }
 
 void calibrate() {
-    setSpeed(0);
-    rightTurn();
-    setSpeed(80);
+    stop();
+    rightTurn(80);
 
     // Calibration for 10 seconds
     for (int i = 0; i < 100; i++) {
         if (i < 25 || i >= 75) {
-            leftTurn();
+            leftTurn(80);
         } else {
-            rightTurn();
+            rightTurn(80);
         }
         trs.calibrate();
     }
 
     // Stop after the calibration
-    setSpeed(0);
     stop();
+}
+
+void searchTrack(int iterations) {
+    for (int i = 0; i < iterations; i++) {
+        delay(1);
+        trs.readLine(sensorValues);
+        if (onTrack()) {
+            trackFound = true;
+            //Initialize the PID function. Otherwise, it will rotate at
+            //one spot as integral is a hugely large number.
+            error_prior = 0;
+            integral = 0;
+            return;
+        }
+    }
 }
 
 void setup() {
@@ -135,10 +159,10 @@ void setup() {
     while (value != 0xEF) {
         PCF8574Write(0x1F | PCF8574Read());
         value = PCF8574Read() | 0xE0;
-        position = trs.readLine(sensorValues) / 200;
-        delay(100);
-        forward();
     }
+    position = trs.readLine(sensorValues) / 200;
+    delay(100);
+    forward(80);
 }
 
 void loop() {
@@ -148,10 +172,9 @@ void loop() {
     //All the sensors read bright
     if (derailed()) {
         trackFound = false;
-        setSpeed(0);
+        stop();
         // Move backward slightly to check the last position on the line.
-        backward();
-        setSpeed(60);
+        backward(60);
         delay(100);
         // Read the last position.
         position = trs.readLine(sensorValues);
@@ -160,109 +183,53 @@ void loop() {
     // If the last position was the same as the desired position
     if (!trackFound && position == 2000) {
         // move forward with searching every 1 millisecond for the next line.
-        forward();
-        setSpeed(180);
+        forward(180);
 
         //Path searching for 100 ms.
-        for (int i = 0; i < 100; i++) {
-            delay(1);
-            trs.readLine(sensorValues);
-            if (onTrack()) {
-                trackFound = true;
-                //If any of five sensors reads a color,
-                // get ready to restart the PID control
-                // by initializing the integral and prior error value.
-                error_prior = 0;
-                integral = 0;
-                break;
-            }
-        }
+        searchTrack(100);
     }
 
     // If the robot was supposed to go to the right before derailing,
     // turn right slightly and move forward to search.
     if (!trackFound && 2000 < position) {
-        rightTurn();
-        setSpeed(90);
+        rightTurn(90);
         delay(100);
-
-        forward();
-        setSpeed(100);
+        forward(100);
 
         //Searching right
-        for (int j = 0; j < 40; j++) {
-            delay(1);
-            trs.readLine(sensorValues);
-            if (onTrack()) {
-                trackFound = true;
-                //Initialize the PID function. Otherwise, it will rotate at
-                //one spot as integral is a hugely large number.
-                error_prior = 0;
-                integral = 0;
-                break;
-            }
-        }
+        searchTrack(40);
 
         // If the robot cannot find the line by forward searching,
         // begin to search by move circularly because it can find the line as the rail
         // was broken somewhere at the right of the last position.
         if (!trackFound) {
-            setSpeed(10, 130);
-            for (int k = 0; k < 300; k++) {
-                delay(1);
-                trs.readLine(sensorValues);
-                if (onTrack()) {
-                    setSpeed(0);
-                    trackFound = true;
-                    error_prior = 0;
-                    integral = 0;
-                    break;
-                }
-            }
+            forward(10, 130);
+            searchTrack(300);
         }
     }
 
-    //If the robot was supposed to go to the left, turn left and do the forward searching for a moment.
+    //If the robot was supposed to go to the left,
+    // turn left and do the forward searching for a moment.
     if (!trackFound && position < 2000) {
-        leftTurn();
-        setSpeed(90);
+        leftTurn(90);
         delay(100);
-
-        forward();
-        setSpeed(100);
+        forward(100);
 
         //Searching left
-        for (int m = 0; m < 40; m++) {
-            delay(1);
-            trs.readLine(sensorValues);
-            if (onTrack()) {
-                trackFound = true;
-                error_prior = 0;
-                integral = 0;
-                break;
-            }
-        }
+        searchTrack(40);
 
         //if the path not found, circular search
         if (!trackFound) {
-            setSpeed(130, 10);
-            for (int n = 0; n < 300; n++) {
-                delay(1);
-                trs.readLine(sensorValues);
-                if (onTrack()) {
-                    setSpeed(0);
-                    trackFound = true;
-                    error_prior = 0;
-                    integral = 0;
-                    break;
-                }
-            }
+            forward(130, 10);
+            searchTrack(300);
         }
     }
 
-    position = trs.readLine(sensorValues);            //Decide position to run when the robot finds the line.
+    //Decide position to run when the robot finds the line.
+    position = trs.readLine(sensorValues);
 
     if (trackFound) {
+        stop();
         int error, derivative, m_control;
 
         error = (int) position - 2000;                   //Error feedback.
@@ -271,29 +238,27 @@ void loop() {
         error_prior = error;
 
         //PID: Kp, Ki, and Kd values obtained by some trials of tuning.
-        m_control = 0.075 * error + 0.0001 * integral + 20 * derivative;
-        const int maxspeed = 180;
+        m_control = KP * error + KI * integral + KD * derivative;
 
-        if (m_control >
-            maxspeed)                                     //PID control function may result in hugely high or low value, so we have to convert it to the maximum speed value.
-            m_control = maxspeed;
-        if (m_control < -maxspeed)
-            m_control = -maxspeed;
+        //PID control function may result in hugely high or low value, so we have to convert it to the maximum speed value.
+        if (m_control > MAX_SPEED) {
+            m_control = MAX_SPEED;
+        }
+        if (m_control < -MAX_SPEED) {
+            m_control = -MAX_SPEED;
+        }
 
         /*
          * While following the path, there may be some distracts, such as a horizontal path across the original path.
          * The original line is 2cm wide, so only the one sensor at the center fully reads the high value.
          */
         if (sensorValues[1] > 900 && sensorValues[2] > 900 && sensorValues[3] > 900) {
-            analogWrite(PWMA, maxspeed);
-            analogWrite(PWMB, maxspeed);
+            forward(MAX_SPEED);
         }
         if (m_control > 0) {
-            analogWrite(PWMA, maxspeed);
-            analogWrite(PWMB, maxspeed - m_control);
+            forward(MAX_SPEED, MAX_SPEED - m_control);
         } else {
-            analogWrite(PWMA, maxspeed + m_control);
-            analogWrite(PWMB, maxspeed);
+            forward(MAX_SPEED + m_control, MAX_SPEED);
         }
     }
 }
