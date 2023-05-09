@@ -13,12 +13,12 @@
 #define KP 0.075
 #define KI 0.0001
 #define KD 20
-#define MAX_SPEED 180
+#define MAX_SPEED 80
 
 TRSensors trs = TRSensors();
 unsigned int sensorValues[NUM_SENSORS];
 unsigned int error_prior = 0;
-unsigned int position;
+unsigned int previousPosition;
 long integral = 0;
 
 // Setup Functions
@@ -60,53 +60,49 @@ void setup() {
     waitForButtonPress();
 
     delay(100);
-    forward(80);
 }
 
 void loop() {
     bool trackFound = searchTrack();
 
-    if (!trackFound) {
-        backward(MAX_SPEED);
+    // When the previous position detected is right in the middle
+    if (!trackFound && previousPosition == 2000) {
+        // Try tracking broken line forward
+        forward(30);
+        trackFound = searchTrack(1000);
+    }
+    // When the previous position detected only left side
+    if (!trackFound && previousPosition < 2000) {
+        // Try tracking steep curve on the left
+        rotateLeft(90);
         delay(100);
-
-        position = trs.readLine(sensorValues);
-        if (position < 2000) {
-            // Direction and speed setup
-            rotateLeft(90);
-            delay(100);
-            forward(100);
-            // Searching operation
-            trackFound = searchTrack(40);
-            if (!trackFound) {
-                // Direction and speed setup
-                forward(130, 10);
-                // Searching operation
-                trackFound = searchTrack(300);
-                stop();
-            }
-        }
-        if (position == 2000) {
-            // Direction and speed setup
-            forward(MAX_SPEED);
-            // Searching operation
-            trackFound = searchTrack(100);
+        forward(30);
+        trackFound = searchTrack(1000);
+        // If nothing found
+        if (!trackFound) {
+            // Try tracking broken line on the right
+            rotateRight(90);
+            delay(200);
+            forward(30);
+            trackFound = searchTrack(1000);
             stop();
         }
-        if (position > 2000) {
-            // Direction and speed setup
-            rotateRight(90);
-            delay(100);
-            forward(100);
-            // Searching operation
-            trackFound = searchTrack(40);
-            if (!trackFound) {
-                // Direction and speed setup
-                forward(10, 130);
-                // Searching operation
-                trackFound = searchTrack(300);
-                stop();
-            }
+    }
+    // When the previous position detected only right side
+    if (!trackFound && 2000 < previousPosition) {
+        // Try tracking steep curve on the right
+        rotateRight(90);
+        delay(100);
+        forward(30);
+        trackFound = searchTrack(1000);
+        // If nothing found
+        if (!trackFound) {
+            // Try tracking broken line on the left
+            rotateLeft(90);
+            delay(200);
+            forward(30);
+            trackFound = searchTrack(1000);
+            stop();
         }
     }
 
@@ -222,12 +218,17 @@ void stop() {
 }
 
 bool searchTrack() {
-    trs.readLine(sensorValues);
-    return !(sensorValues[0] < 20
-             && sensorValues[1] < 20
-             && sensorValues[2] < 20
-             && sensorValues[3] < 20
-             && sensorValues[4] < 20);
+    bool derailed = sensorValues[0] < 20
+                    && sensorValues[1] < 20
+                    && sensorValues[2] < 20
+                    && sensorValues[3] < 20
+                    && sensorValues[4] < 20;
+    unsigned int temp = trs.readLine(sensorValues);
+    if (derailed) {
+        return false;
+    }
+    previousPosition = temp;
+    return true;
 }
 
 bool searchTrack(int ms) {
@@ -238,19 +239,22 @@ bool searchTrack(int ms) {
                          || sensorValues[4] > 50;
 
     for (int i = 0; i < ms; i++) {
-        delay(1);
-        trs.readLine(sensorValues);
+        unsigned int temp = trs.readLine(sensorValues);
         if (trackDetected) {
             // Reset PID in order to prevent integral getting larger
             error_prior = 0;
             integral = 0;
+            previousPosition = temp;
             return true;
         }
+        delay(1);
     }
+    return false;
 }
 
 int PIDControl() {
-    position = trs.readLine(sensorValues);
+    unsigned int position = trs.readLine(sensorValues);
+    previousPosition = position;
     stop();
 
     int error = (int) position - 2000;
