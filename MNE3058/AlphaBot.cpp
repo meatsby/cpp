@@ -13,24 +13,27 @@
 #define KP 0.075
 #define KI 0.0001
 #define KD 20
-#define MAX_SPEED 180
+#define MAX_SPEED 80
 
 TRSensors trs = TRSensors();
 unsigned int sensorValues[NUM_SENSORS];
 unsigned int error_prior = 0;
-unsigned int position;
+unsigned int previousPosition;
 long integral = 0;
 
+// Setup Functions
 void PCF8574Write(byte data);
 byte PCF8574Read();
 void waitForButtonPress();
+void calibrate();
+
+// Motor Control Functions
 void forward(int speed);
 void forward(int leftMotorSpeed, int rightMotorSpeed);
 void backward(int speed);
-void rightTurn(int speed);
-void leftTurn(int speed);
+void rotateRight(int speed);
+void rotateLeft(int speed);
 void stop();
-void calibrate();
 bool searchTrack();
 bool searchTrack(int ms);
 int PIDControl();
@@ -57,50 +60,55 @@ void setup() {
     waitForButtonPress();
 
     delay(100);
-    forward(80);
 }
 
 void loop() {
     bool trackFound = searchTrack();
 
-    if (!trackFound) {
-        stop();
-        backward(60);
+    // When the previous position detected is right in the middle
+    if (!trackFound && previousPosition == 2000) {
+        // Try tracking broken line forward
+        forward(30);
+        trackFound = searchTrack(1000);
+    }
+    // When the previous position detected only left side
+    if (!trackFound && previousPosition < 2000) {
+        // Try tracking steep curve on the left
+        rotateLeft(90);
         delay(100);
-
-        position = trs.readLine(sensorValues);
-        if (position < 2000) {
-            leftTurn(90);
-            delay(100);
-            forward(100);
-
-            trackFound = searchTrack(40);
-            if (!trackFound) {
-                forward(130, 10);
-
-                trackFound = searchTrack(300);
-            }
-        } else if (position == 2000) {
-            forward(180);
-
-            trackFound = searchTrack(100);
-        } else {
-            rightTurn(90);
-            delay(100);
-            forward(100);
-
-            trackFound = searchTrack(40);
-            if (!trackFound) {
-                forward(10, 130);
-
-                trackFound = searchTrack(300);
-            }
+        forward(30);
+        trackFound = searchTrack(1000);
+        // If nothing found
+        if (!trackFound) {
+            // Try tracking broken line on the right
+            rotateRight(90);
+            delay(200);
+            forward(30);
+            trackFound = searchTrack(1000);
+            stop();
+        }
+    }
+    // When the previous position detected only right side
+    if (!trackFound && 2000 < previousPosition) {
+        // Try tracking steep curve on the right
+        rotateRight(90);
+        delay(100);
+        forward(30);
+        trackFound = searchTrack(1000);
+        // If nothing found
+        if (!trackFound) {
+            // Try tracking broken line on the left
+            rotateLeft(90);
+            delay(200);
+            forward(30);
+            trackFound = searchTrack(1000);
+            stop();
         }
     }
 
     if (trackFound) {
         int m_control = PIDControl();
-        bool onMiddle = sensorValues[1] > 900 && sensorValues[2] > 900 && sensorValues[3] > 900;
+        bool onMiddle = sensorValues[1] > 450 && sensorValues[2] > 900 && sensorValues[3] > 450;
 
         if (onMiddle) {
             forward(MAX_SPEED);
@@ -137,6 +145,24 @@ void waitForButtonPress() {
     }
 }
 
+void calibrate() {
+    stop();
+    rotateRight(80);
+
+    // Calibration for 10 seconds
+    for (int i = 0; i < 100; i++) {
+        if (i < 25 || i >= 75) {
+            rotateLeft(80);
+        } else {
+            rotateRight(80);
+        }
+        trs.calibrate();
+    }
+
+    // Stop after the calibration
+    stop();
+}
+
 void forward(int speed) {
     digitalWrite(AIN2, HIGH);
     digitalWrite(AIN1, LOW);
@@ -164,7 +190,7 @@ void backward(int speed) {
     analogWrite(PWMB, speed);
 }
 
-void rightTurn(int speed) {
+void rotateRight(int speed) {
     digitalWrite(AIN2, HIGH);
     digitalWrite(AIN1, LOW);
     digitalWrite(BIN1, HIGH);
@@ -173,7 +199,7 @@ void rightTurn(int speed) {
     analogWrite(PWMB, speed);
 }
 
-void leftTurn(int speed) {
+void rotateLeft(int speed) {
     digitalWrite(AIN2, LOW);
     digitalWrite(AIN1, HIGH);
     digitalWrite(BIN1, LOW);
@@ -191,31 +217,18 @@ void stop() {
     analogWrite(PWMB, 0);
 }
 
-void calibrate() {
-    stop();
-    rightTurn(80);
-
-    // Calibration for 10 seconds
-    for (int i = 0; i < 100; i++) {
-        if (i < 25 || i >= 75) {
-            leftTurn(80);
-        } else {
-            rightTurn(80);
-        }
-        trs.calibrate();
-    }
-
-    // Stop after the calibration
-    stop();
-}
-
 bool searchTrack() {
-    trs.readLine(sensorValues);
-    return sensorValues[0] >= 20
-           && sensorValues[1] >= 20
-           && sensorValues[2] >= 20
-           && sensorValues[3] >= 20
-           && sensorValues[4] >= 20;
+    bool derailed = sensorValues[0] < 20
+                    && sensorValues[1] < 20
+                    && sensorValues[2] < 20
+                    && sensorValues[3] < 20
+                    && sensorValues[4] < 20;
+    unsigned int temp = trs.readLine(sensorValues);
+    if (derailed) {
+        return false;
+    }
+    previousPosition = temp;
+    return true;
 }
 
 bool searchTrack(int ms) {
@@ -226,19 +239,22 @@ bool searchTrack(int ms) {
                          || sensorValues[4] > 50;
 
     for (int i = 0; i < ms; i++) {
-        delay(1);
-        trs.readLine(sensorValues);
+        unsigned int temp = trs.readLine(sensorValues);
         if (trackDetected) {
             // Reset PID in order to prevent integral getting larger
             error_prior = 0;
             integral = 0;
+            previousPosition = temp;
             return true;
         }
+        delay(1);
     }
+    return false;
 }
 
 int PIDControl() {
-    position = trs.readLine(sensorValues);
+    unsigned int position = trs.readLine(sensorValues);
+    previousPosition = position;
     stop();
 
     int error = (int) position - 2000;
