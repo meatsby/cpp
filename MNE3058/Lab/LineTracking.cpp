@@ -34,6 +34,7 @@ void backward(int speed);
 void rotateRight(int speed);
 void rotateLeft(int speed);
 void stop();
+
 bool searchTrack();
 bool searchTrack(int ms);
 int PIDControl();
@@ -67,7 +68,8 @@ void loop() {
     bool trackFound = searchTrack();
 
     if (!trackFound) {
-        backward(MAX_SPEED);
+        stop();
+        backward(60);
         delay(100);
 
         position = trs.readLine(sensorValues);
@@ -83,17 +85,13 @@ void loop() {
                 forward(130, 10);
                 // Searching operation
                 trackFound = searchTrack(300);
-                stop();
             }
-        }
-        if (position == 2000) {
+        } else if (position == 2000) {
             // Direction and speed setup
-            forward(MAX_SPEED);
+            forward(180);
             // Searching operation
             trackFound = searchTrack(100);
-            stop();
-        }
-        if (position > 2000) {
+        } else {
             // Direction and speed setup
             rotateRight(90);
             delay(100);
@@ -105,14 +103,13 @@ void loop() {
                 forward(10, 130);
                 // Searching operation
                 trackFound = searchTrack(300);
-                stop();
             }
         }
     }
 
     if (trackFound) {
         int m_control = PIDControl();
-        bool onMiddle = sensorValues[1] > 450 && sensorValues[2] > 900 && sensorValues[3] > 450;
+        bool onMiddle = sensorValues[1] > 900 && sensorValues[2] > 900 && sensorValues[3] > 900;
 
         if (onMiddle) {
             forward(MAX_SPEED);
@@ -238,6 +235,7 @@ bool searchTrack(int ms) {
                          || sensorValues[4] > 50;
 
     for (int i = 0; i < ms; i++) {
+        delay(1);
         trs.readLine(sensorValues);
         if (trackDetected) {
             // Reset PID in order to prevent integral getting larger
@@ -245,7 +243,6 @@ bool searchTrack(int ms) {
             integral = 0;
             return true;
         }
-        delay(1);
     }
 }
 
