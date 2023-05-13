@@ -1,4 +1,4 @@
-#include "../TRSensors.h"
+#include "../Arduino/TRSensors.h"
 
 #define NUM_SENSORS 5
 
